@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GitHubSearch</string>
+    <string name="title_search">Search</string>
+    <string name="title_bookmark">Bookmark</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="hint_edit_search">Search user&#8230;</string>
+    <string name="no_bookmark">No Bookmark</string>
+</resources>
