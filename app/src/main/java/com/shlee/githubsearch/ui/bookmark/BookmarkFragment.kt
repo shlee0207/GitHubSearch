@@ -1,13 +1,11 @@
 package com.shlee.githubsearch.ui.bookmark
 
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import com.shlee.githubsearch.R
 import com.shlee.githubsearch.databinding.FragmentBookmarkBinding
 import com.shlee.githubsearch.ui.BindingFragment
 import com.shlee.githubsearch.util.provideSearchViewModelFactory
-import com.shlee.githubsearch.viewmodels.BookmarkViewModel
 import com.shlee.githubsearch.viewmodels.SearchViewModel
 
 class BookmarkFragment : BindingFragment<FragmentBookmarkBinding>() {

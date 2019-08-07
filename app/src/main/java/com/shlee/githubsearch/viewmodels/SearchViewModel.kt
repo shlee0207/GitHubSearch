@@ -118,7 +118,4 @@ class SearchViewModel(
         result.value?.refresh?.invoke()
     }
 
-    /*fun isBookmarkEmpty(): Boolean {
-        return bookmarkItems.value.isNullOrEmpty()
-    }*/
 }
