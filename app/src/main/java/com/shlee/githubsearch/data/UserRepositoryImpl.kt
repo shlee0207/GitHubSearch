@@ -1,7 +1,6 @@
 package com.shlee.githubsearch.data
 
 import android.content.Context
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.Transformations.switchMap
 import androidx.paging.Config
 import com.shlee.githubsearch.data.cache.BookmarkCache
@@ -26,9 +25,7 @@ class UserRepositoryImpl private constructor(
 
     override fun retrieveAllBookmark(): Single<List<Bookmark>> {
         return bookmarkDao.selectAll().doOnSuccess {
-            it.forEach { bookmark ->
-                bookmarkCache.saveToCache(bookmark)
-            }
+            bookmarkCache.saveBookmarks(it)
         }
     }
 
@@ -62,7 +59,7 @@ class UserRepositoryImpl private constructor(
         val bookmark = Bookmark.fromUser(user)
         return bookmarkDao.insert(bookmark).doOnSuccess {
             if (it > 0) {
-                bookmarkCache.saveToCache(bookmark)
+                bookmarkCache.saveBookmark(bookmark)
             }
         }
     }

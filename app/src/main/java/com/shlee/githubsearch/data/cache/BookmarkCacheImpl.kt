@@ -11,8 +11,14 @@ class BookmarkCacheImpl : BookmarkCache{
         return cache.contains(user.id)
     }
 
-    override fun saveToCache(bookmark: Bookmark) {
+    override fun saveBookmark(bookmark: Bookmark) {
         cache.add(bookmark.uid)
+    }
+
+    override fun saveBookmarks(bookmarks: List<Bookmark>) {
+        for (bookmark in bookmarks) {
+            cache.add(bookmark.uid)
+        }
     }
 
     override fun removeBookmark(bookmark: Bookmark) {

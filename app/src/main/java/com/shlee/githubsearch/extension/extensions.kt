@@ -1,33 +1,14 @@
 package com.shlee.githubsearch.extension
 
-import android.annotation.SuppressLint
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.lifecycle.LiveData
 import androidx.paging.*
-import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 fun <T> Single<T>.with() = subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-
-
-
-/*fun <Key, Value> DataSource.Factory<Key, Value>.toObservable(
-    pageSize: Int,
-    initialLoadKey: Key? = null,
-    boundaryCallback: PagedList.BoundaryCallback<Value>? = null,
-    schedulers: Scheduler = Schedulers.io()
-): Observable<PagedList<Value>> {
-    return RxPagedListBuilder(this, Config(pageSize))
-            .setInitialLoadKey(initialLoadKey)
-            .setBoundaryCallback(boundaryCallback)
-            .setFetchScheduler(schedulers)
-            .buildObservable()
-}*/
 
 fun <Key, Value> DataSource.Factory<Key, Value>.toLiveData(
     pageSize: Int,
@@ -41,4 +22,22 @@ fun <Key, Value> DataSource.Factory<Key, Value>.toLiveData(
         .setBoundaryCallback(boundaryCallback)
         .setFetchExecutor(fetchExecutor)
         .build()
+}
+
+fun <T> List<T>.cloneAndAddElement(element: T) : List<T> {
+    val newList = ArrayList<T>()
+    newList.addAll(this)
+    newList.add(element)
+    return newList
+}
+
+fun <T> List<T>.cloneAndRemoveElement(index: Int) : List<T> {
+    if (index < 0 || index >= this.size) {
+        return this
+    }
+
+    val newList = ArrayList<T>()
+    newList.addAll(this)
+    newList.removeAt(index)
+    return newList
 }

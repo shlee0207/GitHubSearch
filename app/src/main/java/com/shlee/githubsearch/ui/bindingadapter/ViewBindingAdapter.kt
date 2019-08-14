@@ -64,7 +64,7 @@ fun bindBookmarkRepository(
     recyclerView.adapter ?. run {
         if (this is BookmarkAdapter) {
             this.items = items
-            this.notifyDataSetChanged()
+            this.submitList(items)
         }
     } ?: run {
         BookmarkAdapter(items, viewModel).apply {

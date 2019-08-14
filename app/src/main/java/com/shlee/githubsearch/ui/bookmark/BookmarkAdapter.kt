@@ -3,9 +3,9 @@ package com.shlee.githubsearch.ui.bookmark
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.shlee.githubsearch.R
 import com.shlee.githubsearch.databinding.ItemBookmarkBinding
@@ -15,7 +15,7 @@ import com.shlee.githubsearch.viewmodels.SearchViewModel
 class BookmarkAdapter(
     var items: List<User>,
     var viewModel: SearchViewModel
-) : RecyclerView.Adapter<BookmarkAdapter.BookmarkViewHolder>() {
+) : ListAdapter<User, BookmarkAdapter.BookmarkViewHolder> (ItemDiffUtil()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -32,10 +32,18 @@ class BookmarkAdapter(
         holder.binding.vm = viewModel
     }
 
-    override fun getItemCount(): Int = items.size
-
     class BookmarkViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding: ItemBookmarkBinding = DataBindingUtil.bind(view)!!
+    }
+
+    class ItemDiffUtil : DiffUtil.ItemCallback<User>() {
+        override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem == newItem
+        }
     }
 
 }

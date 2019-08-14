@@ -7,7 +7,9 @@ interface BookmarkCache {
 
     fun isBookmarked(user: User): Boolean
 
-    fun saveToCache(bookmark: Bookmark)
+    fun saveBookmark(bookmark: Bookmark)
+
+    fun saveBookmarks(bookmarks: List<Bookmark>)
 
     fun removeBookmark(bookmark: Bookmark)
 

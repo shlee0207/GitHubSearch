@@ -1,19 +1,17 @@
 package com.shlee.githubsearch.viewmodels
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.Transformations.switchMap
-import androidx.paging.PagedList
 import com.jakewharton.rxrelay2.PublishRelay
 import com.shlee.githubsearch.data.UserRepository
 import com.shlee.githubsearch.data.db.Bookmark
 import com.shlee.githubsearch.domain.User
+import com.shlee.githubsearch.extension.cloneAndAddElement
+import com.shlee.githubsearch.extension.cloneAndRemoveElement
 import com.shlee.githubsearch.extension.with
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 class SearchViewModel(
@@ -83,10 +81,11 @@ class SearchViewModel(
             .subscribe({
                 if (it > 0) {
                     val value = bookmarkItems.value!!
-                    value.add(user)
-                    bookmarkItems.value = value
+                    val newValue = value.cloneAndAddElement(user)
 
-                    updateSearchItemBookmark(user.id)
+                    bookmarkItems.value = newValue.toMutableList()
+
+                    updatedBookmarkId.postValue(user.id)
                 }
             }, {
 
@@ -98,20 +97,17 @@ class SearchViewModel(
             .subscribe({
                 if (it > 0) {
                     val value = bookmarkItems.value!!
-                    val index = value.indexOfFirst { user.id == it.id }
-                    value.removeAt(index)
-                    bookmarkItems.value = value
+                    val deletedIndex = value.indexOfFirst { user.id == it.id }
+                    val newValue = value.cloneAndRemoveElement(deletedIndex)
 
-                    updateSearchItemBookmark(user.id)
+                    bookmarkItems.value = newValue.toMutableList()
+
+                    updatedBookmarkId.postValue(user.id)
                 }
             }, {
 
             })
         )
-    }
-
-    private fun updateSearchItemBookmark(id: Long) {
-        updatedBookmarkId.value = id
     }
 
     fun refresh() {
