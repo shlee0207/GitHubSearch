@@ -9,9 +9,9 @@ This sample contains two screeen :
  
 ### Libraries  
  * Jetpack
-  - ViewModel
-  - Room
-  - Paging
+   - ViewModel
+   - Room
+   - Paging
  * RxAndroid
  * Glide
  * Retrofit
