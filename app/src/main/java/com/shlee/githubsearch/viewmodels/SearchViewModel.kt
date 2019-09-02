@@ -7,10 +7,10 @@ import androidx.lifecycle.Transformations.switchMap
 import com.jakewharton.rxrelay2.PublishRelay
 import com.shlee.githubsearch.data.UserRepository
 import com.shlee.githubsearch.data.db.Bookmark
+import com.shlee.githubsearch.data.executor.NETWORK_IO
 import com.shlee.githubsearch.domain.User
-import com.shlee.githubsearch.extension.cloneAndAddElement
-import com.shlee.githubsearch.extension.cloneAndRemoveElement
 import com.shlee.githubsearch.extension.with
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
@@ -18,10 +18,10 @@ class SearchViewModel(
     private val repository: UserRepository
 ) : BaseViewModel() {
 
-    private val userName = MutableLiveData<String>()
-    private val result = map(userName) {
-        repository.searchByName(it, true)
-    }
+    val userName = MutableLiveData<String>()
+    val result = map(userName) {
+        repository.searchByName(it, true, NETWORK_IO)
+    }!!
     var searchItems = switchMap(result) { it.pagedList }!!
     var loadingState = switchMap(result) { it.loadingState }!!
     var refreshState = switchMap(result) { it.refreshState }!!
@@ -49,9 +49,11 @@ class SearchViewModel(
             .distinctUntilChanged()
             .filter { it.isNotEmpty() }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
+            .subscribe ({
                 userName.value = it
-            }
+            }, {
+                // handle error
+            })
         )
     }
 
@@ -59,10 +61,10 @@ class SearchViewModel(
         autoCompletePublishSubject.accept(query.toString())
     }
 
-    fun retrieveAll() {
+    fun retrieveAllBookmark() {
         addToDisposable(repository.retrieveAllBookmark().with()
             .map {
-                it.map { bookmark ->  Bookmark.toUser(bookmark) }
+                it.map { bookmark -> Bookmark.toUser(bookmark) }
             }
             .subscribe({
                 bookmarkItems.value = it.toMutableList()
@@ -77,33 +79,40 @@ class SearchViewModel(
             return
         }
 
-        addToDisposable(repository.addToBookmark(user).with()
-            .subscribe({
+        addToDisposable(repository.addBookmark(user)
+            .flatMap {
                 if (it > 0) {
-                    val value = bookmarkItems.value!!
-                    val newValue = value.cloneAndAddElement(user)
-
-                    bookmarkItems.value = newValue.toMutableList()
-
-                    updatedBookmarkId.postValue(user.id)
+                    repository.retrieveAllBookmark()
+                } else {
+                    Single.just(emptyList())
                 }
+            }
+            .with()
+            .subscribe({
+                bookmarkItems.value = it.map { bookmark ->
+                    Bookmark.toUser(bookmark)
+                }.toMutableList()
+                updatedBookmarkId.postValue(user.id)
             }, {
 
             }))
     }
 
     fun deleteBookmark(user: User) {
-        addToDisposable(repository.deleteBookmark(Bookmark.fromUser(user)).with()
-            .subscribe({
+        addToDisposable(repository.deleteBookmark(Bookmark.fromUser(user))
+            .flatMap {
                 if (it > 0) {
-                    val value = bookmarkItems.value!!
-                    val deletedIndex = value.indexOfFirst { user.id == it.id }
-                    val newValue = value.cloneAndRemoveElement(deletedIndex)
-
-                    bookmarkItems.value = newValue.toMutableList()
-
-                    updatedBookmarkId.postValue(user.id)
+                    repository.retrieveAllBookmark()
+                } else {
+                    Single.just(emptyList())
                 }
+            }
+            .with()
+            .subscribe({
+                bookmarkItems.value = it.map { bookmark ->
+                    Bookmark.toUser(bookmark)
+                }.toMutableList()
+                updatedBookmarkId.postValue(user.id)
             }, {
 
             })

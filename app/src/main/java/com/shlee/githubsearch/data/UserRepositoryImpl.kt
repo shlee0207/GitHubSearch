@@ -1,6 +1,5 @@
 package com.shlee.githubsearch.data
 
-import android.content.Context
 import androidx.lifecycle.Transformations.switchMap
 import androidx.paging.Config
 import com.shlee.githubsearch.data.cache.BookmarkCache
@@ -12,12 +11,10 @@ import com.shlee.githubsearch.data.network.Listing
 import com.shlee.githubsearch.data.network.UserDataSourceFactory
 import com.shlee.githubsearch.domain.User
 import com.shlee.githubsearch.extension.toLiveData
-import com.shlee.githubsearch.util.provideBookmarkCache
-import com.shlee.githubsearch.util.provideBookmarkDao
-import com.shlee.githubsearch.util.provideGitHubApiService
 import io.reactivex.Single
+import java.util.concurrent.Executor
 
-class UserRepositoryImpl private constructor(
+class UserRepositoryImpl constructor(
     private val bookmarkDao: BookmarkDao,
     private val gitHubApiService: GitHubApiService,
     private val bookmarkCache: BookmarkCache
@@ -29,19 +26,23 @@ class UserRepositoryImpl private constructor(
         }
     }
 
-    override fun searchByName(name: String, isRemote: Boolean): Listing<User> =
+    override fun searchByName(
+        name: String,
+        isRemote: Boolean,
+        executor: Executor
+    ): Listing<User> =
         if (isRemote) {
-            searchFromRemote(name)
+            searchFromRemote(name, executor)
         } else {
             searchFromDb(name)
         }
 
-    private fun searchFromRemote(name: String): Listing<User> {
+    private fun searchFromRemote(name: String, executor: Executor): Listing<User> {
         val sourceFactory = UserDataSourceFactory(gitHubApiService, name)
         val livePagedList = sourceFactory.toLiveData(
             pageSize = 30,
             config = Config(pageSize = 30, initialLoadSizeHint = 30),
-            fetchExecutor = NETWORK_IO)
+            fetchExecutor = executor)
 
         return Listing(
             pagedList = livePagedList,
@@ -55,7 +56,7 @@ class UserRepositoryImpl private constructor(
         TODO("not implemented")
     }
 
-    override fun addToBookmark(user: User): Single<Long> {
+    override fun addBookmark(user: User): Single<Long> {
         val bookmark = Bookmark.fromUser(user)
         return bookmarkDao.insert(bookmark).doOnSuccess {
             if (it > 0) {
@@ -80,12 +81,16 @@ class UserRepositoryImpl private constructor(
 
         private var instance: UserRepository? = null
 
-        fun getInstance(context: Context): UserRepository =
+        fun getInstance(
+            bookmarkDao: BookmarkDao,
+            gitHubApiService: GitHubApiService,
+            bookmarkCache: BookmarkCache
+        ): UserRepository =
             instance ?: synchronized(this) {
                 instance ?: UserRepositoryImpl(
-                                provideBookmarkDao(context),
-                                provideGitHubApiService(),
-                                provideBookmarkCache()
+                                bookmarkDao,
+                                gitHubApiService,
+                                bookmarkCache
                             ).also { instance = it }
             }
 

@@ -24,7 +24,7 @@ class BookmarkFragment : BindingFragment<FragmentBookmarkBinding>() {
             binding.lifecycleOwner = it
 
             if (viewModel.bookmarkItems.value.isNullOrEmpty()) {
-                viewModel.retrieveAll()
+                viewModel.retrieveAllBookmark()
             }
         }
     }

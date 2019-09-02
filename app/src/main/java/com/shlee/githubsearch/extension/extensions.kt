@@ -23,21 +23,3 @@ fun <Key, Value> DataSource.Factory<Key, Value>.toLiveData(
         .setFetchExecutor(fetchExecutor)
         .build()
 }
-
-fun <T> List<T>.cloneAndAddElement(element: T) : List<T> {
-    val newList = ArrayList<T>()
-    newList.addAll(this)
-    newList.add(element)
-    return newList
-}
-
-fun <T> List<T>.cloneAndRemoveElement(index: Int) : List<T> {
-    if (index < 0 || index >= this.size) {
-        return this
-    }
-
-    val newList = ArrayList<T>()
-    newList.addAll(this)
-    newList.removeAt(index)
-    return newList
-}

@@ -17,7 +17,11 @@ fun provideSearchViewModelFactory(context: Context): SearchViewModelFactory {
 }
 
 fun provideUserRepository(context: Context): UserRepository {
-    return UserRepositoryImpl.getInstance(context)
+    return UserRepositoryImpl.getInstance(/*context*/
+        provideBookmarkDao(context),
+        provideGitHubApiService(),
+        provideBookmarkCache()
+    )
 }
 
 fun provideBookmarkDao(context: Context): BookmarkDao {

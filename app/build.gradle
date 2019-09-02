@@ -28,6 +28,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -72,9 +75,14 @@ dependencies {
 
     // local Unit Test
     testImplementation "junit:junit:$rootProject.jUnitVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockitoCoreVersion"
+    testImplementation "com.nhaarman:mockito-kotlin:$rootProject.mockitoKotlinVersion"
+    testImplementation "com.squareup.retrofit2:retrofit-mock:$rootProject.retrofitVersion"
 
     // Android Testing Support Library's runner and rules
     androidTestImplementation "androidx.test:runner:$rootProject.axtRunnerVersion"
+    //androidTestImplementation "androidx.arch.core:core-testing:2.0.1"
+    testImplementation 'android.arch.core:core-testing:1.1.1'
 
     // Espresso UI Testing
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"

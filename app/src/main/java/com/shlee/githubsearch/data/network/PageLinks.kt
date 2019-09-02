@@ -2,7 +2,6 @@ package com.shlee.githubsearch.data.network
 
 import okhttp3.Headers
 
-
 class PageLinks(
     headers: Headers
 ) {
@@ -82,3 +81,46 @@ class PageLinks(
     }
 
 }
+
+class Person {
+    var name: String = ""
+    var age: Int = 0
+}
+
+class A {
+
+    // with, let, apply, also, run
+    // apply 의 경우 수신객체의 property 초기
+    val perter = Person().apply {
+        name = "peter"
+        age = 10
+    }
+
+
+    // let
+
+
+    val hexNumberRegex = run {
+        val digits = "0-9"
+        val sign = "+-"
+
+        Regex("")
+    }
+
+    fun test() {
+        val sb = StringBuilder().apply {
+            append("a")
+        }
+
+        with(StringBuilder()) {
+            append("a")
+            append("b")
+            toString()
+        }
+    }
+
+    fun aa(): String {
+        return ""
+    }
+}
+

@@ -4,14 +4,15 @@ import com.shlee.githubsearch.data.db.Bookmark
 import com.shlee.githubsearch.data.network.Listing
 import com.shlee.githubsearch.domain.User
 import io.reactivex.Single
+import java.util.concurrent.Executor
 
 interface UserRepository {
 
-    fun searchByName(name: String, isRemote: Boolean): Listing<User>
+    fun searchByName(name: String, isRemote: Boolean, executor: Executor): Listing<User>
 
     fun retrieveAllBookmark(): Single<List<Bookmark>>
 
-    fun addToBookmark(user: User): Single<Long>
+    fun addBookmark(user: User): Single<Long>
 
     fun deleteBookmark(bookmark: Bookmark): Single<Int>
 
