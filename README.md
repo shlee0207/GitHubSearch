@@ -5,8 +5,8 @@ This is just a simple project for user searching and bookmarking on gitHub.
 ### Feature
 This sample contains two screeen : 
  1. searching user from network
- 2. user bookmark
 ![search](./screenshot/search.png)
+ 2. user bookmark
 ![bookmark](./screenshot/bookmark.png)
  
 ### Libraries  
